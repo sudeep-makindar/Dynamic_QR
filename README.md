@@ -1,47 +1,21 @@
-# QR Hackathon Redirect System
+# Dynamic QR Redirection System for Hackathons
 
-A dynamic QR code redirect system for hackathon events.
+A dynamic QR code redirection system built with Next.js and Supabase for managing physical tables at Hackathons.
 
-## Setup
+## Features
+- **Dynamic Routing**: Print a QR code once and change its destination URL dynamically via an admin dashboard.
+- **Time-based Rules**: Schedule redirects for specific times during the event (e.g. Lunch menu at 12 PM, sub-event link at 3 PM).
+- **Multi-Event Support**: Manage multiple distinctive hackathons from a single dashboard.
+- **Bulk Operations**: Apply URLs to all tables or specific chunks of tables simultaneously.
+- **Print-ready PDF Generation**: Generate perfectly spaced A4 PDFs containing the event name, QR matrix, and table labels, ready to be printed and folded into table tents.
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+## Tech Stack
+- Frontend: Next.js (App Router), Tailwind CSS
+- Backend: Next.js API Routes, Supabase (Postgres)
+- Auth: Custom JWT-protected paths + Supabase RLS
+- Utilities: lucide-react (icons), qrcode & jsPDF (PDF export)
 
-2. **Configure environment:**
-   Copy `.env.local` and fill in your Supabase service role key:
-   - Go to: https://supabase.com/dashboard/project/ghgmkocedknbtyjseyof/settings/api
-   - Copy the `service_role` key
-   - Paste into `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`
+## Deployment Readiness
+This build is designated as `v0` and implements the core foundation. 
 
-3. **Run locally:**
-   ```bash
-   npm run dev
-   ```
-
-## Routes
-
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page |
-| `/t/[1-50]` | QR redirect (auto-redirects based on time) |
-| `/admin` | Admin login |
-| `/admin/dashboard` | Manage redirect rules |
-| `/admin/qrcodes` | Generate & print QR codes |
-
-## Admin Credentials
-
-Default password: `hackathon2024`  
-Change via `ADMIN_PASSWORD` env variable.
-
-## Deploy on Vercel
-
-1. Push to GitHub
-2. Connect to Vercel
-3. Add environment variables:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-   - `ADMIN_PASSWORD`
-   - `NEXT_PUBLIC_BASE_URL` (your production domain)
+*Note: Ensure `.env.local` contains `NEXTAUTH_SECRET` and `SUPABASE_SERVICE_ROLE_KEY` prior to deployment.*

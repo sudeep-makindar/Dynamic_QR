@@ -52,33 +52,17 @@ export async function POST(request: NextRequest) {
     // Generate a URL-friendly slug
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + Math.floor(Math.random() * 1000)
 
-    // 1. Create the event
-    const { data: event, error: eventError } = await db
-        .from('events')
-        .insert({ name, slug })
-        .select()
-        .single()
+    // 1. Create the event and its tables automatically inside a single ACID-compliant Postgres function
+    const { data: event, error: eventError } = await db.rpc('create_event_with_tables', {
+        p_name: name,
+        p_slug: slug,
+        p_table_count: table_count
+    })
 
     if (eventError || !event) {
-        return NextResponse.json({ error: eventError?.message || 'Failed to create event' }, { status: 500 })
+        return NextResponse.json({ error: eventError?.message || 'Failed to create event in database' }, { status: 500 })
     }
 
-    // 2. Generate the tables for this event
-    const tablesToInsert = Array.from({ length: table_count }).map((_, i) => ({
-        event_id: event.id,
-        table_number: i + 1,
-        label: `Table ${i + 1}`,
-    }))
-
-    const { error: tablesError } = await db
-        .from('qr_tables')
-        .insert(tablesToInsert)
-
-    if (tablesError) {
-        // If table creation fails, delete the event to rollback (dirty rollback)
-        await db.from('events').delete().eq('id', event.id)
-        return NextResponse.json({ error: tablesError.message }, { status: 500 })
-    }
-
+    // The RPC returns the json record of the inserted event
     return NextResponse.json({ event })
 }

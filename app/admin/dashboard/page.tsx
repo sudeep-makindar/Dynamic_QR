@@ -45,6 +45,13 @@ export default function AdminDashboard() {
             setShowAddModal(false)
             setForm({ name: '', table_count: 50 })
             fetchEvents()
+        } else {
+            try {
+                const data = await res.json()
+                alert(`Error: ${data.error || 'Failed to create event. Check console.'}`)
+            } catch (e) {
+                alert('A network or server error occurred.')
+            }
         }
         setSaving(false)
     }
